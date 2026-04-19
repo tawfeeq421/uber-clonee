@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  namespace: uber
+  labels:
+    auther: Tawfeeq
+  annotation:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "ture"
+
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+      - uber.com
+      secretName: uber-tls
+
+  rules:
+    - host: uber.com
+      paths:
+        path: /
+        pathType: Prefix
+        backend:
+          name: uber-service
+          port:
+            number: 80
