@@ -80,5 +80,24 @@ pipeline{
                 '''
             }
         }
+        stage('Kubernetes Prod Deploy'){
+            steps{
+                withCredentials([[
+                    $class 'AmazonWebServicesCredentialsBuilding',
+                    credentiaslId: 'aws-creds'
+                ]]){
+                    sh '''
+                    set -e aws eks --region $AWS_REGION update-kubeconfig --name $CLUSTER-NAME
+                    kubectl apply -f k8s/namespace.yml
+
+                    kubectl apply -f k8s/.
+
+                    kubectl set image deployment/uber-deployment uberapp=$IMAGE -n $NAMESPACE
+
+                    kubectl rollout status deployment/uber-deployment -n $NAMESPACE
+                    '''
+                }
+            }
+        }
     }
 }
